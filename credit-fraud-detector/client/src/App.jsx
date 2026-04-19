@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Prediction from './components/Prediction';
-import Dashboard from './components/Dashboard';
 
 function App() {
   return (
@@ -14,7 +13,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/predict" element={<Prediction />} />
-            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </main>
       </div>

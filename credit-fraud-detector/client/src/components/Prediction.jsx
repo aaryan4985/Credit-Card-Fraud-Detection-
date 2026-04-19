@@ -19,23 +19,39 @@ export default function Prediction() {
   };
 
   const autoGenerate = () => {
-    // Generate some somewhat realistic random values
-    const newFeatures = Array(28).fill(0).map(() => (Math.random() * 4 - 2).toFixed(4));
+    // Generate NORMAL transaction - typical legitimate transaction patterns
+    // Normal transactions have: moderate amounts, V features near 0 (center of PCA space)
+    const newFeatures = Array(28).fill(0).map(() => {
+      // V1-V28: normal transactions cluster around 0 with small variance
+      const base = (Math.random() - 0.5) * 1.5; // range roughly -0.75 to 0.75
+      return base.toFixed(4);
+    });
     setFormData({
-      time: Math.floor(Math.random() * 100000).toString(),
-      amount: (Math.random() * 500).toFixed(2),
+      time: Math.floor(Math.random() * 150000 + 10000).toString(),
+      amount: (Math.random() * 200 + 10).toFixed(2), // $10-$210 typical legitimate
       features: newFeatures
     });
   };
   
   const generateFraudList = () => {
-     // Generate high values typical of fraud
-     const newFeatures = Array(28).fill(0).map(() => (Math.random() * 10 - 5).toFixed(4));
-     setFormData({
-       time: Math.floor(Math.random() * 5000).toString(),
-       amount: (Math.random() * 2000 + 1000).toFixed(2),
-       features: newFeatures
-     });
+    // Generate FRAUD transaction - anomalous patterns
+    // Fraud has: high amounts, extreme V values (away from center of PCA space)
+    const newFeatures = Array(28).fill(0).map((_, idx) => {
+      // Make some features extreme (fraud detection patterns)
+      // V1, V2, V3, V4, V5, V14, V17 are most important for fraud detection
+      const importantFeatures = [0, 1, 2, 3, 12, 16, 17];
+      if (importantFeatures.includes(idx)) {
+        // Extreme values for important features
+        return ((Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 3)).toFixed(4);
+      }
+      // Other features also slightly more extreme than normal
+      return ((Math.random() - 0.5) * 3).toFixed(4);
+    });
+    setFormData({
+      time: Math.floor(Math.random() * 86400).toString(), // Any time
+      amount: (Math.random() * 2000 + 500).toFixed(2), // $500-$2500 unusual high
+      features: newFeatures
+    });
   }
 
   const handleSubmit = async (e) => {
