@@ -8,6 +8,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', path: '/', icon: <ShieldCheck size={20} /> },
     { name: 'Predict', path: '/predict', icon: <Activity size={20} /> },
+    { name: 'Analytics', path: '/dashboard', icon: <LayoutDashboard size={20} /> },
   ];
 
   return (

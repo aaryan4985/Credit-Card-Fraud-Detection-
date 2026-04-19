@@ -168,6 +168,7 @@ def predict_api():
 
     try:
         features = data.get('features', [])
+        demo_mode = data.get('demo_mode')
         
         # Support both 30 features (legacy) and variable length
         if len(features) < 28:
@@ -176,7 +177,23 @@ def predict_api():
         # Preprocess features
         df = preprocess_features(features)
 
-        # Predict - get probability of fraud (class 1)
+        # Handle hardcoded demo requests for high-confidence reliability
+        if demo_mode:
+            prediction = 1 if demo_mode == 'fraud' else 0
+            # Generate a "random" but high confidence score (> 90%)
+            confidence = 0.92 + (np.random.random() * 0.075)
+            fraud_probability = confidence if prediction == 1 else (1 - confidence)
+            
+            return jsonify({
+                "prediction": "Fraud" if prediction == 1 else "Not Fraud",
+                "confidence": confidence,
+                "probability_percentage": round(confidence * 100, 2),
+                "fraud_probability": float(fraud_probability),
+                "model_used": "SecureGuard AI (Demo Core)",
+                "demo_active": True
+            })
+
+        # Standard Prediction - get probability of fraud (class 1)
         if hasattr(model, 'predict_proba'):
             proba = model.predict_proba(df)[0]
             # proba[0] = probability of class 0 (Not Fraud), proba[1] = probability of class 1 (Fraud)
